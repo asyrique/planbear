@@ -1,14 +1,15 @@
 {
-    "name": "planbear-api",
-    "version": "0.0.1",
-    "private": true,
-    "main": "server/server.js",
-    "dependencies": {
-        "express": "~4.0.0",
-        "mongoose": "~4.0.2",
-        "body-parser": "~1.0.1"
-    },
-    "devDependencies": {
-        "dotenv": "~0.4.0"
-    }
+  "name": "planbear-api",
+  "version": "0.0.1",
+  "private": true,
+  "main": "server/server.js",
+  "dependencies": {
+    "body-parser": "~1.0.1",
+    "express": "~4.0.0",
+    "mongoose": "~4.0.2",
+    "twilio": "^2.1.0"
+  },
+  "devDependencies": {
+    "dotenv": "~0.4.0"
+  }
 }

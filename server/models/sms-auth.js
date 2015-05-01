@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var schema = new mongoose.Schema(
 {
     phone: String,
-    code: String
+    code: Number
 });
 
 schema.set('toJSON',
