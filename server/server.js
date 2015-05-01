@@ -117,7 +117,7 @@ router.route('/verify/:id/:code')
             // delete document
             // data.remove();
 
-            res.send({});
+            res.send({phone: data.phone});
         });
     });
 
