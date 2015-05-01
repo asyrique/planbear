@@ -4,8 +4,9 @@
   "private": true,
   "main": "server/server.js",
   "dependencies": {
-    "body-parser": "~1.0.1",
-    "express": "~4.0.0",
+    "body-parser": "^1.12.3",
+    "cors": "^2.6.0",
+    "express": "^4.12.3",
     "mongoose": "~4.0.2",
     "twilio": "^2.1.0"
   },

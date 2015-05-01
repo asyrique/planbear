@@ -9,7 +9,6 @@ var app        = express();                 // define our app using express
 var mongoose   = require('mongoose');
 var bodyParser = require('body-parser');
 var crypto     = require('crypto');
-var twilio     = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 // UTILITIES
 // Load Mongo URI from .env for local development
@@ -19,6 +18,7 @@ try{
 catch(err){
     console.log(err);
 }
+var twilio     = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 //Initialize hashing function
 var hasher = crypto.createHash('sha256');
