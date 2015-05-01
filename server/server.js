@@ -12,7 +12,7 @@ var crypto     = require('crypto');
 
 // UTILITIES
 // Load Mongo URI from .env for local development
-console.log(require('dotenv').load());
+if (require.defined('dotenv')) require('dotenv').load();
 
 //Initialize hashing function
 var hasher = crypto.createHash('sha256');
@@ -47,7 +47,7 @@ app.use(bodyParser.json());
 var port = process.env.PORT || 8080;        // set our port
 
 // Setup Mongoose
-mongoose.connect(process.env.MONGOHQ_URL, function(err) {
+mongoose.connect(process.env.MONGOHQ_URL || , function(err) {
         if (err) {
             console.log("DB error!");
             throw err;
