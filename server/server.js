@@ -12,7 +12,12 @@ var crypto     = require('crypto');
 
 // UTILITIES
 // Load Mongo URI from .env for local development
-if (require.defined('dotenv')) require('dotenv').load();
+try{
+    require('dotenv').load();
+}
+catch(err){
+    console.log(err);
+}
 
 //Initialize hashing function
 var hasher = crypto.createHash('sha256');
