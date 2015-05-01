@@ -9,6 +9,8 @@ var app        = express();                 // define our app using express
 var mongoose   = require('mongoose');
 var bodyParser = require('body-parser');
 var crypto     = require('crypto');
+var cors       = require('cors');
+
 
 // UTILITIES
 // Load Mongo URI from .env for local development
@@ -49,6 +51,7 @@ function planbearAuth(req, res, next){
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors());
 
 var port = process.env.PORT || 8080;        // set our port
 
