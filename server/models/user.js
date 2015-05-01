@@ -8,15 +8,14 @@ var schema = new mongoose.Schema(
         type: String,
         unique: true
     },
-    phoneNum:
+    phone:
     {
         type: String,
         select: false
     },
-    location:
-    {
-        type: [Number],  // [<longitude>, <latitude>]
-        index: '2d'      // create the geospatial index
+    photo: {
+        data: Buffer,
+        contentType: String
     },
     joined:
     {
@@ -34,6 +33,7 @@ var schema = new mongoose.Schema(
         default: 0, //0: unverified 1:verified
         max: 1
     },
+    preferences: [String],
     ratings:
     [
         {
@@ -94,6 +94,8 @@ schema.set('toJSON',
         delete ret.__v;
  
         delete ret.flag;
+        delete ret.phone;
+        delete ret.email;
         delete ret.token;
         delete ret.ratings;
         delete ret.reports;
