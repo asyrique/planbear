@@ -13,7 +13,7 @@ var crypto     = require('crypto');
 // UTILITIES
 // Load Mongo URI from .env for local development
 try{
-    require('dotenv').load();
+    console.log(require('dotenv').load());
 }
 catch(err){
     console.log(err);
@@ -87,6 +87,7 @@ router.route('/users')
         //set data on users
         user.name = req.body.name;
         user.phone = req.body.phone;
+        user.email = req.body.email;
         user.photo = new Buffer(req.body.photo, 'base64');
         user.token = hasher.update(user.name + toString(Date.now()) + user.phone + 'pedobear').digest('hex');
 
@@ -138,7 +139,7 @@ router.route('/plans')
     })
 
     .get(function(req, res){
-        
+
     });
 
 router.route('/plan/:id')
