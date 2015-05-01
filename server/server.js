@@ -89,7 +89,7 @@ router.route('/verify')
                 twilio.messages.create({
                     body: 'Use ' + random + ' as your verification code.',
                     to: req.body.phone,
-                    from: 'PlanBear'
+                    from: process.env.TWILIO_NUMBER
                 }, function(err, message) {
                     if (err) {
                         console.error('twilio', err);
