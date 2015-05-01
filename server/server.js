@@ -49,7 +49,7 @@ function planbearAuth(req, res, next){
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '50mb'}));
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -131,7 +131,7 @@ router.route('/users')
         user.name = req.body.name;
         user.phone = req.body.phone;
         user.email = req.body.email;
-        user.photo = new Buffer(req.body.photo, 'base64');
+        user.photo = req.body.photo;
         user.token = hasher.update(user.name + toString(Date.now()) + user.phone + 'pedobear').digest('hex');
 
         //Saving the user and sending token for 

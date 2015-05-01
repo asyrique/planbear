@@ -13,10 +13,7 @@ var schema = new mongoose.Schema(
         type: String,
         select: false
     },
-    photo: {
-        data: Buffer,
-        contentType: String
-    },
+    photo: String,
     joined:
     {
         type: Date,
