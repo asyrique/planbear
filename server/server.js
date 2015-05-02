@@ -162,14 +162,14 @@ router.route('/plans')
 
         //set data on Plan
         plan.creator = req.user;
-        plan.category = req.body.category;
-        plan.location = [req.body.location.longitude, req.body.location.latitude];
+        plan.type = req.body.type;
+        plan.location = [req.body.longitude, req.body.latitude];
         plan.description = req.body.description;
 
         plan.save(function(err){
             if (err){
                 console.log(err);
-                res.status(400).send({})
+                res.status(400).send({});
             }
 
             res.status(200).json({});
@@ -177,7 +177,15 @@ router.route('/plans')
     })
 
     .get(function(req, res){
-
+        var coord = [req.query.longitude, req.query.latitude];
+        Plan.find({location: { $near: coord, $maxDistance: 5000}}, function(err, resultset){
+            if (!err){
+                console.log(resultset);
+            } else {
+                console.log(err);
+                res.status(500).send({"error":"Failed to load list."});
+            }
+        });
     });
 
 router.route('/plan/:id')

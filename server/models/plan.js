@@ -7,7 +7,7 @@ var schema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
-    category: {
+    type: {
         type: String, // Look into using enum for this in the future. (food, drinks, movies, clubbing, outdoors)
         index: true
     },
