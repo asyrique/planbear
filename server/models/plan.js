@@ -66,7 +66,14 @@ schema.set('toJSON',
         };
 
         delete ret.location;
-        if (typeof ret.participants !== 'number') delete ret.participants;
+
+        if (ret.comments) {
+            ret.comments = ret.comments.length;
+        }
+
+        if (ret.participants) {
+            ret.participants = ret.participants.length;
+        }
  
         delete ret._id;
         delete ret.__v;

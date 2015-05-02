@@ -13,13 +13,13 @@ var cors       = require('cors');
 
 // UTILITIES
 // Load Mongo URI from .env for local development
-try{
-    console.log(require('dotenv').load());
-}
-catch(err){
+try {
+    require('dotenv').load();
+} catch(ex) {
     console.log(err);
 }
-var twilio     = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+
+var twilio = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 // Load Models
 var User = require('./models/user');
@@ -248,7 +248,7 @@ router.route('/plans')
         });
     })
 
-    .get(function(req, res){
+    .get(planbearAuth, function(req, res){
         if (!req.query.longitude || !req.query.latitude) {
             return res.status(400).send({
                 error: 'No location provided'
@@ -271,13 +271,6 @@ router.route('/plans')
         }).exec(function(err, data) {
             if (err) return res.send(err);
 
-            data.map(function(plan) {
-                plan.participants = plan.participants.length;
-                plan.comments = plan.comments.length;
-
-                return plan;
-            });
-
             res.send(data);
         });
     });
@@ -286,31 +279,71 @@ router.route('/plans/:id')
     .get(planbearAuth, function(req, res) {
         Plan.findOne({
             _id: req.params.id
-        }).populate({
+        }).populate([{
             path: 'creator',
             select: 'name'
-        }).exec(function(err, plan) {
+        }, {
+            path: 'comments.user',
+            select: 'name'
+        }]).exec(function(err, plan) {
             if (err) return res.send(err);
 
-            if (!plan.creator._id.equals(req.params.id) || plan.participants.indexOf({
-                id: req.params.id
-            }) === -1) {
-                delete plan.participants;
-                delete plan.comments;
+            var isParticipant = plan.participants.some(function(participant) {
+                if (participant.user.equals(req.user._id)) return true;
+            });
 
-                return res.send(plan);
+            if (plan.creator._id.equals(req.user._id) || isParticipant) {
+                return res.send({
+                    id: plan._id,
+                    description: plan.description,
+                    creator: plan.creator,
+                    created: plan.created,
+                    type: plan.type,
+                    participants: plan.participants.length,
+                    comments: plan.comments
+                });
             } else {
                 return res.send(plan);
             }
         });
-    })
+    });
 
-    .put(function(req, res){
+router.route('/plans/:id/comments')
+    .post(planbearAuth, function(req, res) {
+        Plan.findOne({
+            _id: req.params.id
+        }, function(err, plan) {
+            if (err) return res.send(err);
 
-    })
+            var isParticipant = plan.participants.some(function(participant) {
+                if (participant.user.equals(req.user._id)) return true;
+            });
 
-    .post(function(req, res){
+            if (plan.creator.equals(req.user._id) || isParticipant) {
+                var comment = plan.comments.create({
+                    user: req.user._id,
+                    body: req.body.body
+                });
 
+                plan.comments.push(comment);
+
+                plan.save(function(err) {
+                    if (err) return res.send(err);
+
+                    res.send({
+                        id: comment._id,
+                        user: {
+                            id: req.user._id,
+                            name: req.user.name
+                        },
+                        body: comment.body,
+                        time: comment.time
+                    });
+                });
+            } else {
+                return res.status(403).send({});
+            }
+        });
     });
 
 // REGISTER OUR ROUTES -------------------------------
