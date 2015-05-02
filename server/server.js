@@ -111,7 +111,7 @@ router.route('/verify/:id/:code')
             if (err) return res.status(500).send(err);
 
             // delete document
-            // data.remove();
+            data.remove();
 
             res.send({phone: data.phone});
         });
@@ -169,7 +169,7 @@ router.route('/plans')
         plan.save(function(err){
             if (err){
                 console.log(err);
-                throw(err);
+                res.status(400).send({})
             }
 
             res.status(200).json({});
