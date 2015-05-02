@@ -242,26 +242,26 @@ router.route('/plans')
     })
 
     .get(function(req, res){
-        if ( !req.query.longitude || !req.query.latitude )
-            return res.status(400).json({"error":"No location info provided"});
+        if (!req.query.longitude || !req.query.latitude) return res.status(400).json({"error":"No location info provided"});
 
         var coord = [req.query.longitude, req.query.latitude];
+
         Plan.find({
             location: {
                 $near: coord,
                 $maxDistance: 3
             }
-        }).populate([
-            {
-                path: 'creator',
-                select: 'name'
-            },
-            {
-                path: 'participants.user',
-                select: 'name'
-            }
-        ]).exec(function(err, data) {
+        }).populate({
+            path: 'creator',
+            select: 'name'
+        }).exec(function(err, data) {
             if (err) return res.send(err);
+
+            data.map(function(plan) {
+                plan.participants = plan.participants.length;
+
+                return plan;
+            });
 
             res.send(data);
         });
