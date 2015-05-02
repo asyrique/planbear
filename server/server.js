@@ -248,12 +248,15 @@ router.route('/plans')
             return res.status(400).json({"error":"No location info provided"});
 
         var coord = [req.query.longitude, req.query.latitude];
-        Plan.find({location: { $near: coord, $maxDistance: 3}}, function(err, resultset){
-            if (!err){
-                res.status(200).json(resultset);
-            } else {
-                res.status(400).send({"error":"Failed to load list."});
+        Plan.find({
+            location: {
+                $near: coord,
+                $maxDistance: 5000
             }
+        }).populate('creator participants.user').exec(function(err, data) {
+            if (err) return res.send(err);
+
+            res.send(data);
         });
     });
 
