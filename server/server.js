@@ -172,11 +172,14 @@ router.route('/users/:id')
     })
 
     .put(planbearAuth, function(req, res){
-
-        req.user.name = req.body.name;
-        req.user.photo = new Buffer(req.body.photo, 'base64');
+        req.user.photo = req.body.photo;
         req.user.preferences = req.body.preferences;
 
+        req.user.save(function(err) {
+            if (err) return res.send(err);
+
+            res.send({});
+        });
     });
 
 router.route('/plans')
