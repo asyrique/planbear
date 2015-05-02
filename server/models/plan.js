@@ -60,12 +60,12 @@ schema.set('toJSON',
     {
         ret.id = ret._id;
 
-        ret.location = {
-            latitude: doc.location[0],
-            longitude: doc.location[1]
-        };
-
-        delete ret.location;
+        if (ret.location) {
+            ret.location = {
+            latitude: ret.location[1],
+            longitude: ret.location[0]
+            };
+        }
 
         if (ret.comments) {
             ret.comments = ret.comments.length;
