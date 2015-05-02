@@ -172,8 +172,8 @@ router.route('/users/:id')
     })
 
     .put(planbearAuth, function(req, res){
-        req.user.photo = req.body.photo;
-        req.user.preferences = req.body.preferences;
+        if (req.body.photo) req.user.photo = req.body.photo;
+        if (req.body.preferences) req.user.preferences = req.body.preferences;
 
         req.user.save(function(err) {
             if (err) return res.send(err);
