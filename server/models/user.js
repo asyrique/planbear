@@ -76,9 +76,11 @@ schema.set('toJSON',
         delete ret.token;
         delete ret.reports;
 
-        ret.ratings = ret.ratings.reduce(function(rating, item) {
-            return rating + item.rating;
-        }, 0);
+        if (ret.ratings) {
+            ret.ratings = ret.ratings.reduce(function(rating, item) {
+                return rating + item.rating;
+            }, 0);
+        }
     }
  
 });
