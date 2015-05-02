@@ -62,12 +62,6 @@ var schema = new mongoose.Schema(
     ]
 });
 
-schema.virtual('rating').get(function() {
-    return this.ratings.reduce(function(rating, item) {
-        return rating + item.rating;
-    }, 0);
-});
-
 schema.set('toJSON',
 {
     transform: function(doc, ret, options)
@@ -81,6 +75,10 @@ schema.set('toJSON',
         delete ret.email;
         delete ret.token;
         delete ret.reports;
+
+        ret.ratings = ret.ratings.reduce(function(rating, item) {
+            return rating + item.rating;
+        }, 0);
     }
  
 });
