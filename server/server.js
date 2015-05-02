@@ -136,9 +136,7 @@ router.route('/users')
 
         //Saving the user and sending token for 
         user.save(function(err){
-            if (err){
-                res.status(401).json({"error":"Email already exists"});
-            }
+            if (err) return res.status(401).json({"error":"Email already exists"});
 
             res.json({ "token": user.token,"user": user});
         });

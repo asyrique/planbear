@@ -24,12 +24,6 @@ var schema = new mongoose.Schema(
         type: String,
         unique: true
     },
-    verified:
-    {
-        type: Number,
-        default: 0, //0: unverified 1:verified
-        max: 1
-    },
     preferences: [String],
     ratings:
     [
