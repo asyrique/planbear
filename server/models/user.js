@@ -6,7 +6,8 @@ var schema = new mongoose.Schema(
     email:
     {
         type: String,
-        unique: true
+        unique: true,
+        select: false
     },
     phone:
     {
@@ -23,7 +24,8 @@ var schema = new mongoose.Schema(
     token:
     {
         type: String,
-        unique: true
+        unique: true,
+        select: false
     },
     preferences: [String],
     ratings:
@@ -61,19 +63,10 @@ var schema = new mongoose.Schema(
     ]
 });
 
-schema.virtual('rating').get(function()
-{
-    return this.ratings.reduce(function(cumulativeRating, currRating, i){
-        return cumulativeRating + currRating.rating;
-    }, cumulativeRating = 0);
-    // var rating = 0;
- 
-    // for (i = 0; i < this.ratings.length; i++)
-    // {
-    //     rating += this.ratings[i].rating;
-    // }
- 
-    // return rating;
+schema.virtual('rating').get(function() {
+    return this.ratings.reduce(function(rating, item) {
+        return rating + item.rating;
+    }, 0);
 });
 
 schema.set('toJSON',
@@ -85,7 +78,6 @@ schema.set('toJSON',
         delete ret._id;
         delete ret.__v;
  
-        delete ret.flag;
         delete ret.phone;
         delete ret.email;
         delete ret.token;
