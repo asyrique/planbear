@@ -52,6 +52,10 @@ var schema = new mongoose.Schema(
         }
     ]
 });
+
+schema.virtual('participant').get(function() {
+    return this.participants.length;
+});
  
 schema.set('toJSON',
 {
@@ -59,9 +63,17 @@ schema.set('toJSON',
     {
         ret.id = ret._id;
         ret.rating = doc.rating;
+        delete ret.location;
+        ret.location = {
+            "latitude": doc.location[0],
+            "longitude": doc.location[1]
+        };
  
         delete ret._id;
         delete ret.__v;
+        // delete ret.comments;
+        // delete ret.participants;
+
     }
  
 });

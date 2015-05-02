@@ -185,10 +185,11 @@ router.route('/users/:id')
                     name: user.name,
                     email: user.email,
                     preferences: user.preferences,
-                    joined: user.joined
+                    joined: user.joined,
+                    rating: user.rating
                 });
             } else {
-                res.send(user);
+                res.send(user.toJSON(true));
             }
         });
     })
@@ -204,45 +205,95 @@ router.route('/users/:id')
         });
     });
 
+router.route('/users/:id/rating')
+    .post(planbearAuth, function(req, res){
+        User.findOne({"_id": req.params.id}, function(err, user){
+            if (err){
+                res.status(400).json({"error":"User id doesn't exist"});
+                throw err;
+            }
+
+            user.update({id:req.params.id}, {$push: {ratings:{
+                user: req.user,
+                rating: req.body.rating
+                }}}, {upsert: true}, function(err){
+                    if (err){
+                        console.log(err);
+                        res.status(400).json({"error":"Rating insert failed"});
+                    } else{
+                        res.status(200);
+                    }
+                }
+            );
+        });
+    });
+
 router.route('/plans')
 
     .post(planbearAuth, function(req, res){
         var plan = new Plan();
 
         //set data on Plan
-        plan.creator = req.user;
+        plan.creator = req.user._id;
         plan.type = req.body.type;
         plan.location = [req.body.longitude, req.body.latitude];
         plan.description = req.body.description;
 
-        plan.save(function(err){
+        plan.save(function(err, plan){
             if (err){
                 console.log(err);
                 res.status(400).send({});
             }
 
-            res.status(200).json({});
+            res.status(200).json({id: plan._id});
         });
     })
 
     .get(function(req, res){
+        if ( !req.query.longitude || !req.query.latitude )
+            return res.status(400).json({"error":"No location info provided"});
+
         var coord = [req.query.longitude, req.query.latitude];
-        Plan.find({location: { $near: coord, $maxDistance: 5000}}, function(err, resultset){
+        Plan.find({location: { $near: coord, $maxDistance: 3}}, function(err, resultset){
             if (!err){
-                console.log(resultset);
+                res.status(200).json(resultset);
             } else {
-                console.log(err);
-                res.status(500).send({"error":"Failed to load list."});
+                res.status(400).send({"error":"Failed to load list."});
             }
         });
     });
 
-router.route('/plan/:id')
-    .get(function(req, res){
+router.route('/plans/:id')
+    .get(planbearAuth, function(req, res){
+        Plan.findOne({"_id": req.params.id}, "", function(err, plan){
 
+            // Cases 1: Plan maker accesses plan
+            if (plan.creator.id.equals(req.params.id)){
+                res.status(200).json(plan);
+            }
+            //You are not a participant.
+            else if (plan.participants.indexOf({"id": req.params.id}) === -1){
+                res.status(200).json({
+                    creator : plan.creator,
+                    type : plan.type,
+                    location : plan.location,
+                    description : plan.description,
+                    created : plan.created,
+                    participant: plan.participant
+                });
+            }
+            // You are a signed up user.
+            else {
+                res.status(200).json(plan);
+            }
+        });
     })
 
     .put(function(req, res){
+
+    })
+
+    .post(function(req, res){
 
     });
 
