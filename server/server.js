@@ -251,7 +251,16 @@ router.route('/plans')
                 $near: coord,
                 $maxDistance: 3
             }
-        }).populate('creator participants.user').exec(function(err, data) {
+        }).populate([
+            {
+                path: 'creator',
+                select: 'name'
+            },
+            {
+                path: 'participants.user',
+                select: 'name'
+            }
+        ]).exec(function(err, data) {
             if (err) return res.send(err);
 
             res.send(data);
