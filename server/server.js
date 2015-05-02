@@ -151,6 +151,7 @@ router.route('/users')
         user.phone = req.body.phone;
         user.email = req.body.email;
         user.photo = req.body.photo;
+        user.preferences = req.body.preferences;
 
         user.token = require('crypto').createHash('sha256').update(user.name + toString(Date.now()) + user.phone + 'pedobear').digest('hex');
 
