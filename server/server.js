@@ -175,7 +175,7 @@ router.route('/users/:id')
     .get(planbearAuth, function(req, res){
         User.findOne({
             _id: req.params.id
-        }, 'name email joined preferences ratings', function(err, user) {
+        }, 'name email joined preferences', function(err, user) {
             if (err) return req.send(err);
 
             if (user._id.equals(req.user._id)) {
@@ -259,22 +259,29 @@ router.route('/plans')
         });
     })
 
-    .get(planbearAuth, function(req, res){
-        if (!req.query.longitude || !req.query.latitude) return res.status(400).json({"error":"No location info provided"});
+    .get(function(req, res){
+        if (!req.query.longitude || !req.query.latitude) {
+            return res.status(400).send({
+                error: 'No location provided'
+            });
+        }
 
-        var coord = [req.query.longitude, req.query.latitude];
+        var distance = req.query.distance || 20,
+            coordinates = [req.query.longitude, req.query.latitude];
+
+        distance /= 6371;
 
         Plan.find({
             location: {
                 $near: coord,
-                $maxDistance: 10
+                $maxDistance: distance
             }
         }).populate({
             path: 'creator',
             select: 'name'
         }).exec(function(err, data) {
             if (err) return res.send(err);
-            console.log(data);
+
             data.map(function(plan) {
                 plan.participants = plan.participants.length;
                 plan.comments = plan.comments.length;
@@ -287,27 +294,24 @@ router.route('/plans')
     });
 
 router.route('/plans/:id')
-    .get(planbearAuth, function(req, res){
-        Plan.findOne({"_id": req.params.id}, "", function(err, plan){
+    .get(planbearAuth, function(req, res) {
+        Plan.findOne({
+            _id: req.params.id
+        }).populate({
+            path: 'creator',
+            select: 'name'
+        }).exec(function(err, plan) {
+            if (err) return res.send(err);
 
-            // Cases 1: Plan maker accesses plan
-            if (plan.creator._id === req.params.id){
-                res.status(200).json(plan);
-            }
-            //You are not a participant.
-            else if (plan.participants.indexOf({"id": req.params.id}) === -1){
-                res.status(200).json({
-                    creator : plan.creator,
-                    type : plan.type,
-                    location : plan.location,
-                    description : plan.description,
-                    created : plan.created,
-                    participant: plan.participant
-                });
-            }
-            // You are a signed up user.
-            else {
-                res.status(200).json(plan);
+            if (!plan.creator._id.equals(req.params.id) || plan.participants.indexOf({
+                id: req.params.id
+            }) === -1) {
+                delete plan.participants;
+                delete plan.comments;
+
+                return res.send(plan);
+            } else {
+                return res.send(plan);
             }
         });
     })
@@ -316,47 +320,8 @@ router.route('/plans/:id')
 
     })
 
-    .post(planbearAuth, function(req, res){
-        Plan.findByIdAndUpdate( req.params.id,
-            {
-                $push: {participants: {
-                            user: req.user._id
-                            }
-                        }
-            },
-            function(err, plan){
-                if (err){
-                    res.status(400).json({"error": "Join did not succeed"});
-                }
-                else
-                    res.status(200).json({
-                        "comments": plan.comments
-                    });
-            });
-    });
+    .post(function(req, res){
 
-router.route('/plans/:id/comments')
-    .post(planbearAuth, function(req, res){
-        Plan.findById(req.params.id, function(err, plan){
-            var comment = plan.comments.create({
-                user:req.user._id,
-                body: req.body.body
-            });
-            plan.comments.push(comment);
-            plan.save(function(err) {
-                if (err) return res.status(400).json({"error":"Calback hell"});
-
-                res.send({
-                    user: {
-                        id: req.user._id,
-                        name: req.user.name
-                    },
-                    body: comment.body,
-                    time: comment.time,
-                    id: comment._id
-                });
-            });
-        });
     });
 
 // REGISTER OUR ROUTES -------------------------------
