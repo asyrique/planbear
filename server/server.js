@@ -276,6 +276,7 @@ router.route('/plans')
 
             data.map(function(plan) {
                 plan.participants = plan.participants.length;
+                plan.comments = plan.comments.length;
 
                 return plan;
             });
