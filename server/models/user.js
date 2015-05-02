@@ -11,6 +11,7 @@ var schema = new mongoose.Schema(
     phone:
     {
         type: String,
+        unique: true,
         select: false
     },
     photo: String,
