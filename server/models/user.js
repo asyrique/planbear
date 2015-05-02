@@ -80,7 +80,6 @@ schema.set('toJSON',
         delete ret.phone;
         delete ret.email;
         delete ret.token;
-        delete ret.ratings;
         delete ret.reports;
     }
  
