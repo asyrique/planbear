@@ -63,9 +63,10 @@ var schema = new mongoose.Schema(
 });
 
 schema.virtual('rating').get(function() {
-    return this.ratings.reduce(function(rating, item) {
-        return rating + item.rating;
-    }, 0);
+        return this.ratings.reduce(function(rating, item) {
+            console.log(item);
+            return rating + item.rating;
+        }, 0);
 });
 
 schema.set('toJSON',
@@ -80,7 +81,6 @@ schema.set('toJSON',
         delete ret.phone;
         delete ret.email;
         delete ret.token;
-        delete ret.ratings;
         delete ret.reports;
     }
  
