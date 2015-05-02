@@ -53,10 +53,6 @@ var schema = new mongoose.Schema(
     ]
 });
 
-schema.virtual('participant').get(function() {
-    return this.participants.length;
-});
- 
 schema.set('toJSON',
 {
     transform: function(doc, ret, options)
@@ -69,7 +65,7 @@ schema.set('toJSON',
         };
 
         delete ret.location;
-        delete ret.participants;
+        if (typeof ret.participants !== 'number') delete ret.participants;
  
         delete ret._id;
         delete ret.__v;
