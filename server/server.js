@@ -236,7 +236,7 @@ router.route('/plans')
         //set data on Plan
         plan.creator = req.user._id;
         plan.type = req.body.type;
-        plan.location = [req.body.longitude, req.body.latitude];
+        plan.location = [req.body.location.longitude, req.body.location.latitude];
         plan.description = req.body.description;
 
         plan.save(function(err, plan){
