@@ -159,7 +159,15 @@ router.route('/users')
         user.save(function(err){
             if (err) return res.status(400).json({"error":"Email already exists"});
 
-            res.json({ "token": user.token,"user": user});
+            res.json({
+                token: user.token,
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    preferences: user.preferences,
+                    joined: user.joined
+                }
+            });
         });
     });
 
