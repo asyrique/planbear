@@ -32,8 +32,6 @@ function planbearAuth(req, res, next){
     if (req.headers.token) {
         User.findOne({"token": req.headers.token}, function(err, user){
             if (err) {res.status(403).json({"message":"Fucked up token"});}
-
-            console.log(user);
             req.user = user;
 
             next();
@@ -207,25 +205,21 @@ router.route('/users/:id')
 
 router.route('/users/:id/rating')
     .post(planbearAuth, function(req, res){
-        User.findOne({"_id": req.params.id}, function(err, user){
-            if (err){
-                res.status(400).json({"error":"User id doesn't exist"});
-                throw err;
-            }
 
-            user.update({id:req.params.id}, {$push: {ratings:{
-                user: req.user,
+        User.findByIdAndUpdate( req.params.id,
+            {$push: {ratings: {
+                user: req.user._id,
                 rating: req.body.rating
-                }}}, {upsert: true}, function(err){
-                    if (err){
-                        console.log(err);
-                        res.status(400).json({"error":"Rating insert failed"});
-                    } else{
-                        res.status(200);
-                    }
+            }}},
+            function(err, model){
+                if (err){
+                    console.log(err);
+                    res.status(400).json({"fuck":"you"});
                 }
-            );
-        });
+                else
+                    console.log(model);
+                    res.status(200).json({});
+            });
     });
 
 router.route('/plans')
