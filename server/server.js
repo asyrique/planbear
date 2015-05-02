@@ -16,7 +16,7 @@ var cors       = require('cors');
 try {
     require('dotenv').load();
 } catch(ex) {
-    console.log(err);
+    console.log(ex);
 }
 
 var twilio = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
