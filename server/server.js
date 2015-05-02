@@ -260,14 +260,21 @@ router.route('/plans')
     })
 
     .get(function(req, res){
-        if (!req.query.longitude || !req.query.latitude) return res.status(400).json({"error":"No location info provided"});
+        if (!req.query.longitude || !req.query.latitude) {
+            return res.status(400).send({
+                error: 'No location provided'
+            });
+        }
 
-        var coord = [req.query.longitude, req.query.latitude];
+        var distance = req.query.distance || 20,
+            coordinates = [req.query.longitude, req.query.latitude];
+
+        distance /= 6371;
 
         Plan.find({
             location: {
                 $near: coord,
-                $maxDistance: 3
+                $maxDistance: distance
             }
         }).populate({
             path: 'creator',
@@ -287,27 +294,24 @@ router.route('/plans')
     });
 
 router.route('/plans/:id')
-    .get(planbearAuth, function(req, res){
-        Plan.findOne({"_id": req.params.id}, "", function(err, plan){
+    .get(planbearAuth, function(req, res) {
+        Plan.findOne({
+            _id: req.params.id
+        }).populate({
+            path: 'creator',
+            select: 'name'
+        }).exec(function(err, plan) {
+            if (err) return res.send(err);
 
-            // Cases 1: Plan maker accesses plan
-            if (plan.creator._id === req.params.id){
-                res.status(200).json(plan);
-            }
-            //You are not a participant.
-            else if (plan.participants.indexOf({"id": req.params.id}) === -1){
-                res.status(200).json({
-                    creator : plan.creator,
-                    type : plan.type,
-                    location : plan.location,
-                    description : plan.description,
-                    created : plan.created,
-                    participant: plan.participant
-                });
-            }
-            // You are a signed up user.
-            else {
-                res.status(200).json(plan);
+            if (!plan.creator._id.equals(req.params.id) || plan.participants.indexOf({
+                id: req.params.id
+            }) === -1) {
+                delete plan.participants;
+                delete plan.comments;
+
+                return res.send(plan);
+            } else {
+                return res.send(plan);
             }
         });
     })
