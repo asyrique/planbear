@@ -31,7 +31,8 @@ var SMSAuth = require('./models/sms-auth');
 function planbearAuth(req, res, next){
     if (req.headers.token) {
         User.findOne({"token": req.headers.token}, function(err, user){
-            if (err) {res.status(403).json({"message":"Fucked up token"});}
+            if (err) return res.status(403).json({"message":"Fucked up token"});
+
             req.user = user;
 
             next();
