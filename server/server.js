@@ -277,7 +277,7 @@ router.route('/plans')
             data.map(function(plan) {
                 plan.participants = plan.participants.length;
                 plan.comments = plan.comments.length;
-                
+
                 return plan;
             });
 
@@ -315,8 +315,47 @@ router.route('/plans/:id')
 
     })
 
-    .post(function(req, res){
+    .post(planbearAuth, function(req, res){
+        Plan.findByIdAndUpdate( req.params.id,
+            {
+                $push: {participants: {
+                            user: req.user._id
+                            }
+                        }
+            },
+            function(err, plan){
+                if (err){
+                    res.status(400).json({"error": "Join did not succeed"});
+                }
+                else
+                    res.status(200).json({
+                        "comments": plan.comments
+                    });
+            });
+    });
 
+router.route('/plans/:id/comments')
+    .post(planbearAuth, function(req, res){
+        Plan.findById(req.params.id, function(err, plan){
+            var comment = plan.comments.create({
+                user:req.user._id,
+                body: req.body.body
+            });
+            plan.comments.push(comment);
+            plan.save(function(err) {
+                if (err) return res.status(400).json({"error":"Calback hell"});
+
+                res.send({
+                    user: {
+                        id: req.user._id,
+                        name: req.user.name
+                    },
+                    body: comment.body,
+                    time: comment.time,
+                    id: comment._id
+                });
+            });
+        });
     });
 
 // REGISTER OUR ROUTES -------------------------------
