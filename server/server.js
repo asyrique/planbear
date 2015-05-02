@@ -8,7 +8,6 @@ var express    = require('express');        // call express
 var app        = express();                 // define our app using express
 var mongoose   = require('mongoose');
 var bodyParser = require('body-parser');
-var crypto     = require('crypto');
 var cors       = require('cors');
 
 
@@ -21,9 +20,6 @@ catch(err){
     console.log(err);
 }
 var twilio     = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-
-//Initialize hashing function
-var hasher = crypto.createHash('sha256');
 
 // Load Models
 var User = require('./models/user');
@@ -132,11 +128,12 @@ router.route('/users')
         user.phone = req.body.phone;
         user.email = req.body.email;
         user.photo = req.body.photo;
-        user.token = hasher.update(user.name + toString(Date.now()) + user.phone + 'pedobear').digest('hex');
+
+        user.token = require('crypto').createHash('sha256').update(user.name + toString(Date.now()) + user.phone + 'pedobear').digest('hex');
 
         //Saving the user and sending token for 
         user.save(function(err){
-            if (err) return res.status(401).json({"error":"Email already exists"});
+            if (err) return res.status(400).json({"error":"Email already exists"});
 
             res.json({ "token": user.token,"user": user});
         });
