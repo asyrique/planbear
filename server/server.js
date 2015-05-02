@@ -258,7 +258,7 @@ router.route('/plans')
         });
     })
 
-    .get(function(req, res){
+    .get(planbearAuth, function(req, res){
         if (!req.query.longitude || !req.query.latitude) return res.status(400).json({"error":"No location info provided"});
 
         var coord = [req.query.longitude, req.query.latitude];
@@ -266,18 +266,18 @@ router.route('/plans')
         Plan.find({
             location: {
                 $near: coord,
-                $maxDistance: 3
+                $maxDistance: 10
             }
         }).populate({
             path: 'creator',
             select: 'name'
         }).exec(function(err, data) {
             if (err) return res.send(err);
-
+            console.log(data);
             data.map(function(plan) {
                 plan.participants = plan.participants.length;
                 plan.comments = plan.comments.length;
-
+                
                 return plan;
             });
 
