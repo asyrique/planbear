@@ -220,6 +220,23 @@ router.route('/users/:id/rating')
             });
     });
 
+router.route('/users/:id/report')
+    .post(planbearAuth, function(req, res){
+
+        User.findByIdAndUpdate( req.params.id,
+            {$push: {reports: {
+                user: req.user._id,
+                description: req.body.reason
+            }}},
+            function(err, model){
+                if (err){
+                    res.status(400).json({"fuck":"you too"});
+                }
+                else
+                    res.status(200).json({});
+            });
+    });
+
 router.route('/plans')
 
     .post(planbearAuth, function(req, res){
