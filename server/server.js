@@ -274,7 +274,13 @@ router.route('/plans')
         }).exec(function(err, data) {
             if (err) return res.send(err);
 
-            res.send(data.toJSON(true));
+            data.map(function(plan) {
+                plan.participants = plan.participants.length;
+
+                return plan;
+            });
+
+            res.send(data);
         });
     });
 
