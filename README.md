@@ -21,4 +21,4 @@ Make plans, meet people.
 - [ ] Create presentation
 
 ##Stretch
-- [ ] Business owner add sponsored plan
+- [ ] Business owner add sponsored
