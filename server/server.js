@@ -273,7 +273,7 @@ router.route('/plans')
 
         Plan.find({
             location: {
-                $near: coord,
+                $near: coordinates,
                 $maxDistance: distance
             }
         }).populate({
