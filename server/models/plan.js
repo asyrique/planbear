@@ -17,6 +17,7 @@ var schema = new mongoose.Schema(
         index: '2d'      // create the geospatial index
     },
     description: String,
+    sponsored: Boolean,
     created:
     {
         type: Date,

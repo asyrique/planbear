@@ -22,4 +22,3 @@ Make plans, meet people.
 
 ##Stretch
 - [ ] Business owner add sponsored plan
-- [ ] 
