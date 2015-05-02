@@ -174,8 +174,22 @@ router.route('/users')
 router.route('/users/:id')
 
     .get(planbearAuth, function(req, res){
-        User.findOne({"_id": req.params.id}, function(err, user){
-            res.json(user);
+        User.findOne({
+            _id: req.params.id
+        }, 'email', function(err, user) {
+            if (err) return req.send(err);
+
+            if (user._id.equals(req.user._id)) {
+                res.send({
+                    id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    preferences: user.preferences,
+                    joined: user.joined
+                });
+            } else {
+                res.send(user);
+            }
         });
     })
 
