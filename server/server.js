@@ -274,13 +274,7 @@ router.route('/plans')
         }).exec(function(err, data) {
             if (err) return res.send(err);
 
-            data.map(function(plan) {
-                plan.participants = plan.participants.length;
-
-                return plan;
-            });
-
-            res.send(data);
+            res.send(data.toJSON(true));
         });
     });
 
