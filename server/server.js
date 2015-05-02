@@ -114,10 +114,31 @@ router.route('/verify/:id/:code')
         }, function(err, data) {
             if (err) return res.status(500).send(err);
 
-            // delete document
-            // data.remove();
+            User.findOne({
+                phone: data.phone
+            }, 'token', function(err, user) {
+                if (err) return res.send(404).send(err);
 
-            res.send({phone: data.phone});
+                if (user) {
+                    data.remove();
+
+                    res.send({
+                        token: user.token,
+                        user: {
+                            id: user._id,
+                            name: user.name,
+                            preferences: user.preferences,
+                            joined: user.joined
+                        }
+                    });
+                } else {
+                    res.send({
+                        phone: data.phone
+                    });
+
+                    data.remove();
+                }
+            });
         });
     });
 
