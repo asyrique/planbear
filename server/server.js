@@ -213,11 +213,9 @@ router.route('/users/:id/rating')
             }}},
             function(err, model){
                 if (err){
-                    console.log(err);
                     res.status(400).json({"fuck":"you"});
                 }
                 else
-                    console.log(model);
                     res.status(200).json({});
             });
     });
@@ -251,7 +249,7 @@ router.route('/plans')
         Plan.find({
             location: {
                 $near: coord,
-                $maxDistance: 5000
+                $maxDistance: 3
             }
         }).populate('creator participants.user').exec(function(err, data) {
             if (err) return res.send(err);
@@ -265,7 +263,7 @@ router.route('/plans/:id')
         Plan.findOne({"_id": req.params.id}, "", function(err, plan){
 
             // Cases 1: Plan maker accesses plan
-            if (plan.creator.id.equals(req.params.id)){
+            if (plan.creator._id === req.params.id){
                 res.status(200).json(plan);
             }
             //You are not a participant.
