@@ -179,6 +179,8 @@ router.route('/users/:id')
         }, 'email', function(err, user) {
             if (err) return req.send(err);
 
+            console.log('is it me', user._id.equals(req.user._id));
+
             if (user._id.equals(req.user._id)) {
                 res.send({
                     id: user._id,
