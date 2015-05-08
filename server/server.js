@@ -38,7 +38,7 @@ app.use(cors());
 var port = process.env.PORT || 8080;        // set our port
 
 // Setup Mongoose
-mongoose.connect(process.env.MONGOHQ_URL, function(err) {
+mongoose.connect(process.env.MONGOLAB_URI, function(err) {
         if (err) {
             console.log("DB error!");
             throw err;
