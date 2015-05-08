@@ -1,5 +1,6 @@
-twilio = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-SMSAuth = require('../models/sms-auth');
+var twilio = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+var SMSAuth = require('../models/sms-auth');
+var User = require('../models/user');
 
 exports.getcode = function(req, res) {
         if (req.body.phone) {
