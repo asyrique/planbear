@@ -62,7 +62,7 @@ router.get('/users/:id', PlanBear.auth, users.fetch);
 router.put('/users/:id', PlanBear.auth, users.update);
 router.post('/users/:id/rating', PlanBear.auth, users.rating);
 router.post('/users/:id/report', PlanBear.auth, users.report);
-router.get('/users/id/photo', users.photo);
+router.get('/users/:id/photo', users.photo);
 
 //Plans
 router.post('/plans', PlanBear.auth, plans.create);

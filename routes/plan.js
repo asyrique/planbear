@@ -8,10 +8,10 @@ exports.create = function(req, res){
         plan.type = req.body.type;
         plan.location = [req.body.location.longitude, req.body.location.latitude];
         plan.description = req.body.description;
+        plan.sponsored = req.user.sponsor;
 
         plan.save(function(err, plan){
             if (err){
-                console.log(err);
                 res.status(400).send({});
             }
 

@@ -15,6 +15,11 @@ var schema = new mongoose.Schema(
         unique: true,
         select: false
     },
+    sponsor:
+    {
+        type: Boolean,
+        default: false
+    },
     photo: String,
     joined:
     {
