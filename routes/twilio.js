@@ -40,7 +40,7 @@ exports.verify = function(req, res){
             _id: req.params.id,
             code: req.params.code
         }, function(err, data) {
-            if (err) return res.status(500).send(err);
+            if (err || data === null) return res.status(500).send(err);
 
             // delete document
             data.remove();
