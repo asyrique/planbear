@@ -47,7 +47,7 @@ exports.verify = function(req, res){
 
             User.findOne({
                 phone: data.phone
-            }, 'token', function(err, user) {
+            }, 'token name preferences joined', function(err, user) {
                 if (err) return res.send(404).send(err);
 
                 if (user) {
