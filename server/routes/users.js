@@ -1,4 +1,5 @@
 var User = require('../models/user');
+var trianglify = require('trianglify');
 
 exports.create = function(req, res){
 
@@ -90,11 +91,18 @@ exports.photo = function(req, res){
             _id: req.params.id,
         }, function(err, user){
                 if (err) return res.status(400).json({});
-                if (!user.photo) return res.status(404).json({});
+                var buf;
+                var contenttype;
+                if (!user.photo) {
+                    buf = new Buffer(trianglify({height: 300, width: 300, seed: req.params.id}));
+                    contenttype = "png";
+                } else {
+                    buf = new Buffer(user.photo, 'base64');
+                    contenttype = "jpeg";
+                }
 
-                var buf = new Buffer(user.photo, 'base64');
                 res.writeHead(200, {
-                    'Content-Type': 'image/jpeg',
+                    'Content-Type': 'image/' + contenttype,
                     'Content-Length': buf.length
                 });
                 res.end(buf);
