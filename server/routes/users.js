@@ -1,4 +1,4 @@
-//User = require('./models/user');
+var User = require('../models/user');
 
 exports.create = function(req, res){
 
