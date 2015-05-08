@@ -230,7 +230,7 @@ router.route('/users/:id/report')
     });
 
 router.route('/users/:id/photo')
-    .get(planbearAuth, function(req, res){
+    .get(function(req, res){
         User.findOne({
             _id: req.params.id,
         }, function(err, user){
