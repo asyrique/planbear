@@ -37,7 +37,16 @@ exports.fetch = function(req, res){
         }, 'name email joined preferences ratings', function(err, user) {
             if (err) return req.send(err);
 
-            res.send(user);
+            if (req.user._id.equals(req.params.id)) {
+                res.send({
+                    id: user._id,
+                    name: user.name,
+                    preferences: user.preferences,
+                    joined: user.joined
+                });
+            } else {
+                res.send(user);
+            }
         });
     };
 
