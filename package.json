@@ -9,9 +9,11 @@
     "express": "^4.12.3",
     "mongoose": "~4.0.2",
     "trianglify": "^0.2.1",
-    "twilio": "^2.1.0"
+    "twilio": "^2.1.0",
+    "canvas": "git://github.com/elspoono/node-canvas-heroku.git"
   },
   "devDependencies": {
-    "dotenv": "~0.4.0"
+    "dotenv": "~0.4.0",
+    "canvas": "*"
   }
 }
