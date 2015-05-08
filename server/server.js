@@ -225,7 +225,25 @@ router.route('/users/:id/report')
                 }
                 else
                     res.status(200).json({});
+
             });
+    });
+
+router.route('/users/:id/photo')
+    .get(planbearAuth, function(req, res){
+        User.findOne({
+            _id: req.params.id,
+        }, function(err, user){
+                if (err)
+                    res.status(400).json({});
+
+                var buf = new Buffer(user.photo, 'base64');
+                res.writeHead(200, {
+                    'Content-Type': 'image/jpeg',
+                    'Content-Length': buf.length
+                });
+                res.end(buf);
+        });
     });
 
 router.route('/plans')

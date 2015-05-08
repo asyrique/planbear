@@ -9,14 +9,13 @@ Make plans, meet people.
 
 ## Demo functionality
 
-- [ ] User register with phone number (Receive SMS to their number)
-- [ ] User add info to profile
-- [ ] USer location updates based on user movement
-- [ ] Display list of plans
-- [ ] User filter plans by category
-- [ ] Create a new plan
-- [ ] Another user joins the plan
-- [ ] Users comment and discuss location/other details
+- [x] User register with phone number (Receive SMS to their number)
+- [x] User add info to profile
+- [x] Display list of plans
+- [x] User filter plans by category
+- [x] Create a new plan
+- [x] Another user joins the plan
+- [x] Users comment and discuss location/other details
 - [ ] Generate APK
 - [ ] Create presentation
 
