@@ -72,7 +72,7 @@ router.post('/plans/:id/comments', PlanBear.auth, plans.comments);
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
-app.use('/api', router);
+app.use('/', router);
 
 // START THE SERVER
 // =============================================================================
