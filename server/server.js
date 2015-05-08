@@ -15,8 +15,9 @@ var express    = require('express'),        // call express
     mongoose   = require('mongoose'),
     bodyParser = require('body-parser'),
     cors       = require('cors'),
-    Planbear = require('./routes/auth'),
+    PlanBear = require('./routes/auth'),
     users = require('./routes/users'),
+    plans = require('./routes/plan'),
     smsauth = require('./routes/twilio'),
     twilio = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
@@ -48,7 +49,7 @@ mongoose.connect(process.env.MONGOLAB_URI, function(err) {
 var router = express.Router();
 
 router.get('/', function(req, res) {
-    res.json({ message: 'up' });
+    res.json({ message: 'APIv2' });
 });
 
 // SMS Auth
@@ -57,130 +58,17 @@ router.get('/verify/:id/:code', smsauth.verify);
 
 //Users
 router.post('/users', users.create);
-router.get('/users/:id', Planbear.auth, users.fetch);
-router.put('/users/:id', Planbear.auth, users.update);
-router.post('/users/:id/rating', Planbear.auth, users.rating);
-router.post('/users/:id/report', Planbear.auth, users.report);
+router.get('/users/:id', PlanBear.auth, users.fetch);
+router.put('/users/:id', PlanBear.auth, users.update);
+router.post('/users/:id/rating', PlanBear.auth, users.rating);
+router.post('/users/:id/report', PlanBear.auth, users.report);
 router.get('/users/id/photo', users.photo);
 
-router.route('/plans')
-
-    .post(Planbear.auth, function(req, res){
-        var plan = new Plan();
-
-        //set data on Plan
-        plan.creator = req.user._id;
-        plan.type = req.body.type;
-        plan.location = [req.body.location.longitude, req.body.location.latitude];
-        plan.description = req.body.description;
-
-        plan.save(function(err, plan){
-            if (err){
-                console.log(err);
-                res.status(400).send({});
-            }
-
-            res.status(200).json({id: plan._id});
-        });
-    })
-
-    .get(Planbear.auth, function(req, res){
-        if (!req.query.longitude || !req.query.latitude) {
-            return res.status(400).send({
-                error: 'No location provided'
-            });
-        }
-
-        var distance = req.query.distance || 20,
-            coordinates = [req.query.longitude, req.query.latitude];
-
-        distance /= 6371;
-
-        Plan.find({
-            location: {
-                $near: coordinates,
-                $maxDistance: distance
-            }
-        }).populate({
-            path: 'creator',
-            select: 'name'
-        }).exec(function(err, data) {
-            if (err) return res.send(err);
-
-            res.send(data);
-        });
-    });
-
-router.route('/plans/:id')
-    .get(Planbear.auth, function(req, res) {
-        Plan.findOne({
-            _id: req.params.id
-        }).populate([{
-            path: 'creator',
-            select: 'name'
-        }, {
-            path: 'comments.user',
-            select: 'name'
-        }]).exec(function(err, plan) {
-            if (err) return res.send(err);
-
-            var isParticipant = plan.participants.some(function(participant) {
-                if (participant.user.equals(req.user._id)) return true;
-            });
-
-            if (plan.creator._id.equals(req.user._id) || isParticipant) {
-                return res.send({
-                    id: plan._id,
-                    description: plan.description,
-                    creator: plan.creator,
-                    created: plan.created,
-                    type: plan.type,
-                    participants: plan.participants.length,
-                    comments: plan.comments
-                });
-            } else {
-                return res.send(plan);
-            }
-        });
-    });
-
-router.route('/plans/:id/comments')
-    .post(Planbear.auth, function(req, res) {
-        Plan.findOne({
-            _id: req.params.id
-        }, function(err, plan) {
-            if (err) return res.send(err);
-
-            var isParticipant = plan.participants.some(function(participant) {
-                if (participant.user.equals(req.user._id)) return true;
-            });
-
-            if (plan.creator.equals(req.user._id) || isParticipant) {
-                var comment = plan.comments.create({
-                    user: req.user._id,
-                    body: req.body.body
-                });
-
-                plan.comments.push(comment);
-
-                plan.save(function(err) {
-                    if (err) return res.send(err);
-
-                    res.send({
-                        id: comment._id,
-                        user: {
-                            id: req.user._id,
-                            name: req.user.name
-                        },
-                        body: comment.body,
-                        time: comment.time
-                    });
-                });
-            } else {
-                return res.status(403).send({});
-            }
-        });
-    });
+//Plans
+router.post('/plans', PlanBear.auth, plans.create);
+router.get('/plans', PlanBear.auth, plans.fetch);
+router.get('/plans/:id', PlanBear.auth, plans.fetchOne);
+router.post('/plans/:id/comments', PlanBear.auth, plans.comments);
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
