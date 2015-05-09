@@ -78,6 +78,24 @@ exports.fetchOne = function(req, res) {
         });
     };
 
+exports.join = function(req, res) {
+	Plan.findById(req.params.id, function(err, plan) {
+		if (err) return res.status(500).send(err);
+
+		if (!plan) return res.status(404).send({});
+
+		plan.participants.push({
+			user: req.user._id
+		});
+		
+		plan.save(function(err) {
+			if (err) return res.status(500).send(err);
+
+			res.send({});
+		})
+	});
+}
+
 exports.comments = function(req, res) {
         Plan.findOne({
             _id: req.params.id

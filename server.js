@@ -68,6 +68,7 @@ router.get('/users/id/photo', users.photo);
 router.post('/plans', PlanBear.auth, plans.create);
 router.get('/plans', PlanBear.auth, plans.fetch);
 router.get('/plans/:id', PlanBear.auth, plans.fetchOne);
+router.post('/plans/:id', PlanBear.auth, plans.join);
 router.post('/plans/:id/comments', PlanBear.auth, plans.comments);
 
 // REGISTER OUR ROUTES -------------------------------
