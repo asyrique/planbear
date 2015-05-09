@@ -62,18 +62,14 @@ schema.set('toJSON',
 
         if (ret.location) {
             ret.location = {
-            latitude: ret.location[1],
-            longitude: ret.location[0]
+				latitude: ret.location[1],
+				longitude: ret.location[0]
             };
         }
 
-        if (ret.comments) {
-            ret.comments = ret.comments.length;
-        }
+        if (ret.comments) ret.comments = ret.comments.length;
 
-        if (ret.participants) {
-            ret.participants = ret.participants.length;
-        }
+        if (ret.participants) ret.participants = ret.participants.length + 1;
  
         delete ret._id;
         delete ret.__v;
