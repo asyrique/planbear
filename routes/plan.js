@@ -92,7 +92,7 @@ exports.join = function(req, res) {
 			if (err) return res.status(500).send(err);
 
 			res.send({comments: plan.comments});
-		})
+		});
 	});
 }
 
