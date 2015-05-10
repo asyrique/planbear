@@ -22,6 +22,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use(bodyParser.json());
+
 app.use(cors());
 
 // connect to database
