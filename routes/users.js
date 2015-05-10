@@ -1,110 +1,108 @@
 var User = require('../models/user');
 var trianglify = require('trianglify');
 
-exports.create = function(req, res){
+exports.create = function (req, res) {
+	var user = new User();
 
-        var user = new User();
+	user.name = req.body.name;
+	user.phone = req.body.phone;
+	user.email = req.body.email;
+	user.photo = req.body.photo;
+	user.preferences = req.body.preferences;
 
-        //set data on users
-        user.name = req.body.name;
-        user.phone = req.body.phone;
-        user.email = req.body.email;
-        user.photo = req.body.photo;
-        user.preferences = req.body.preferences;
+	user.token = require('crypto').createHash('sha256').update(user.name + toString(Date.now()) + user.phone + 'pedobear').digest('hex');
 
-        user.token = require('crypto').createHash('sha256').update(user.name + toString(Date.now()) + user.phone + 'pedobear').digest('hex');
+	user.save(function (err) {
+		if (err) return res.status(400).json({
+			error: 'Email already exists'
+		});
 
-        //Saving the user and sending token for 
-        user.save(function(err){
-            if (err) return res.status(400).json({"error":"Email already exists"});
+		res.json({
+			token: user.token,
+			user: {
+				id: user._id,
+				name: user.name,
+				preferences: user.preferences,
+				joined: user.joined
+			}
+		});
+	});
+};
 
-            res.json({
-                token: user.token,
-                user: {
-                    id: user._id,
-                    name: user.name,
-                    preferences: user.preferences,
-                    joined: user.joined
-                }
-            });
-        });
-    };
+exports.fetch = function (req, res) {
+	User.findById(req.params.id, function (err, user) {
+		if (err) return res.status(500).send(err);
 
-exports.fetch = function(req, res){
-        
-        User.findOne({
-            _id: req.params.id
-        }, 'name email joined preferences ratings', function(err, user) {
-            if (err) return req.send(err);
+		if (!user) return res.status(404).send({});
 
-            res.send(user);
-        });
-    };
+		res.send(user);
+	});
+};
 
-exports.update = function(req, res){
-        
-        if (req.body.photo) req.user.photo = req.body.photo;
-        if (req.body.preferences) req.user.preferences = req.body.preferences;
+exports.update = function (req, res) {
+	if (req.body.photo) req.user.photo = req.body.photo;
 
-        req.user.save(function(err) {
-            if (err) return res.send(err);
+	if (req.body.preferences) req.user.preferences = req.body.preferences;
 
-            res.send({});
-        });
-    };
+	req.user.save(function (err) {
+		if (err) return res.status(500).send(err);
 
-exports.rating = function(req, res){
+		res.send({});
+	});
+};
 
-        User.findByIdAndUpdate( req.params.id,
-            {$push: {ratings: {
-                user: req.user._id,
-                rating: req.body.rating
-            }}},
-            function(err, model){
-                if (err){
-                    res.status(400).json({"fuck":"you"});
-                }
-                else
-                    res.status(200).json({});
-            });
-    };
+exports.rating = function (req, res) {
+	User.findByIdAndUpdate(req.params.id, {
+		$push: {
+			ratings: {
+				user: req.user._id,
+				rating: req.body.rating
+			}
+		}
+	}, function (err, model) {
+		res.status(err ? 500 : 200).json({});
+	});
+};
 
-exports.report = function(req, res){
+exports.report = function (req, res) {
+	User.findByIdAndUpdate(req.params.id, {
+		$push: {
+			reports: {
+				user: req.user._id,
+				description: req.body.reason
+			}
+		}
+	}, function (err, user) {
+		res.status(err ? 500 : 200).json({});
+	});
+};
 
-        User.findByIdAndUpdate( req.params.id,
-            {$push: {reports: {
-                user: req.user._id,
-                description: req.body.reason
-            }}},
-            function(err, model){
-                if (err){
-                    res.status(400).json({"fuck":"you too"});
-                }
-                else
-                    res.status(200).json({});
+exports.photo = function (req, res) {
+	User.findById(req.params.id, function (err, user) {
+		if (err) return res.status(400).json({});
 
-            });
-    };
+		var buffer,
+			contentType;
 
-exports.photo = function(req, res){
-        User.findOne({
-            _id: req.params.id,
-        }, function(err, user){
-                if (err) return res.status(400).json({});
-                var buf;
-                var contenttype;
-                if (!user.photo) {
-                    buf = new Buffer(trianglify({height: 300, width: 300, seed: req.params.id}));
-                    contenttype = "png";
-                } else {
-                    buf = new Buffer(user.photo, 'base64');
-                    contenttype = "jpeg";
-                }
+		if (!user.photo) {
+			buffer = new Buffer(trianglify({
+				height: 300,
+				width: 300,
+				seed: req.params.id
+			}));
 
-                res.writeHead(200, {
-                    'Content-Type': 'image/' + contenttype,
-                    'Content-Length': buf.length
-                });
-                res.end(buf);
-        });
-    };
+			contentType = 'png';
+		} else {
+			buffer = new Buffer(user.photo, 'base64');
+
+			contentType = 'jpeg';
+		}
+
+		res.writeHead(200, {
+			'Content-Type': 'image/' + contentType,
+			'Content-Length': buffer.length
+		});
+
+		res.end(buffer);
+	});
+};
