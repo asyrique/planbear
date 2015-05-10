@@ -1,81 +1,78 @@
-// server.js
-
-// BASE SETUP
-// =============================================================================
+// setup development environment
 
 try {
-    require('dotenv').load();
-    console.log("true");
-} catch(ex) {
-    console.log(ex);
+	require('dotenv').load();
+} catch (ex) {
+	console.log(ex);
 }
-// call the packages we need
-var express    = require('express'),        // call express
-    app        = express(),                 // define our app using express
-    mongoose   = require('mongoose'),
-    bodyParser = require('body-parser'),
-    cors       = require('cors'),
-    PlanBear = require('./routes/auth'),
-    users = require('./routes/users'),
-    plans = require('./routes/plan'),
-    smsauth = require('./routes/twilio'),
-    twilio = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
+// include dependencies
 
-// UTILITIES
-// Load Mongo URI from .env for local development
+var express = require('express'), // call express
+	bodyParser = require('body-parser'),
+	cors = require('cors');
 
-// Load Models
-var User = require('./models/user'),
-    Plan = require('./models/plan'),
-    SMSAuth = require('./models/sms-auth');
+// init app
 
-// configure app to use bodyParser()
-// this will let us get the data from a POST
-app.use(bodyParser.urlencoded({ extended: true, limit: '50mb'}));
+var app = express();
+
+app.use(bodyParser.urlencoded({
+	extended: true,
+	limit: '2mb'
+}));
+
 app.use(bodyParser.json());
 app.use(cors());
 
-var port = process.env.PORT || 8080;        // set our port
+// connect to database
 
-// Setup Mongoose
-mongoose.connect(process.env.MONGOLAB_URI, function(err) {
-        if (err) {
-            console.log("DB error!");
-            throw err;
-        }
+mongoose.connect(process.env.MONGOLAB_URI, function (err) {
+	if (err) {
+		console.log("DB error!");
+
+		throw err;
+	}
 });
 
-var router = express.Router();
+var PlanBear = require('./planbear/planbear');
 
-router.get('/', function(req, res) {
-    res.json({ message: 'APIv2' });
+var users = require('./routes/users'),
+	plans = require('./routes/plan'),
+	smsAuth = require('./routes/sms-auth');
+
+// "home"
+
+app.get('/', function (req, res) {
+	res.json({
+		message: 'APIv2'
+	});
 });
 
-// SMS Auth
-router.post('/verify', smsauth.getcode);
-router.get('/verify/:id/:code', smsauth.verify);
+// sms auth
 
-//Users
-router.post('/users', users.create);
-router.get('/users/:id', PlanBear.auth, users.fetch);
-router.put('/users/:id', PlanBear.auth, users.update);
-router.post('/users/:id/rating', PlanBear.auth, users.rating);
-router.post('/users/:id/report', PlanBear.auth, users.report);
-router.get('/users/:id/photo', users.photo);
+app.post('/verify', smsAuth.getCode);
+app.get('/verify/:id/:code', smsAuth.verify);
 
-//Plans
-router.post('/plans', PlanBear.auth, plans.create);
-router.get('/plans', PlanBear.auth, plans.fetch);
-router.get('/plans/:id', PlanBear.auth, plans.fetchOne);
-router.post('/plans/:id', PlanBear.auth, plans.join);
-router.post('/plans/:id/comments', PlanBear.auth, plans.comments);
+// users
 
-// REGISTER OUR ROUTES -------------------------------
-// all of our routes will be prefixed with /api
-app.use('/', router);
+app.post('/users', users.create);
+app.get('/users/:id', PlanBear.auth, users.fetch);
+app.put('/users/:id', PlanBear.auth, users.update);
+app.post('/users/:id/rating', PlanBear.auth, users.rating);
+app.post('/users/:id/report', PlanBear.auth, users.report);
+app.get('/users/:id/photo', users.photo);
 
-// START THE SERVER
-// =============================================================================
-app.listen(port);
-console.log('Magic happens on port ' + port);
+// plans
+
+app.post('/plans', PlanBear.auth, plans.create);
+app.get('/plans', PlanBear.auth, plans.fetch);
+app.get('/plans/:id', PlanBear.auth, plans.fetchOne);
+app.post('/plans/:id', PlanBear.auth, plans.join);
+app.post('/plans/:id/comments', PlanBear.auth, plans.comments);
+app.delete('/plans/:id/participants/:user', PlanBear.auth, plans.remove);
+
+// start listening
+
+app.listen(process.env.PORT || 8080, function() {
+	console.log('Magic happens on ' + process.env.PORT || 8080);
+});

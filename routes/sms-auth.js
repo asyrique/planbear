@@ -3,9 +3,9 @@ var SMSAuth = require('../models/sms-auth'),
 
 var twilio = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
-exports.getcode = function (req, res) {
+exports.getCode = function (req, res) {
 	if (req.body.phone) {
-		var random = Math.floor(Math.random() * (9999 - 1000 + 1) + 1000);
+		var random = Math.floor(Math.random() * 9000 + 1000);
 
 		var smsAuth = new SMSAuth();
 
@@ -16,7 +16,7 @@ exports.getcode = function (req, res) {
 			if (err) return res.status(500).send(err);
 
 			twilio.messages.create({
-				body: 'Use ' + random + ' as your verification code.',
+				body: 'Use ' + random + ' as your verification code for PlanBear.',
 				to: req.body.phone,
 				from: process.env.TWILIO_NUMBER
 			}, function (err, message) {
@@ -42,7 +42,7 @@ exports.verify = function (req, res) {
 		User.findOne({
 			phone: data.phone
 		}, 'token name preferences joined', function (err, user) {
-			if (err) return res.send(404).send(err);
+			if (err) return res.send(500).send(err);
 
 			if (user) {
 				res.send({
