@@ -97,6 +97,36 @@ exports.join = function (req, res) {
 	});
 }
 
+exports.leave = function (req, res) {
+	Plan.findById(req.params.id, function (err, plan) {
+		if (err) return res.status(500).send(err);
+
+		if (!plan) return res.status(404).send({});
+
+		var id;
+
+		plan.participants.some(function (participant) {
+			if (participant.user.equals(req.params.user)) {
+				id = participant._id;
+
+				return true;
+			}
+		});
+
+		if (id) {
+			plan.participants.pull(id);
+
+			plan.save(function (err) {
+				if (err) return res.status(500).send(err);
+
+				res.send({});
+			});
+		} else {
+			res.status(404).send({});
+		}
+	});
+}
+
 exports.comments = function (req, res) {
 	Plan.findById(req.params.id, function (err, plan) {
 		if (err) return res.send(err);

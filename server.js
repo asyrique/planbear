@@ -68,8 +68,8 @@ app.post('/plans', PlanBear.auth, plans.create);
 app.get('/plans', PlanBear.auth, plans.fetch);
 app.get('/plans/:id', PlanBear.auth, plans.fetchOne);
 app.post('/plans/:id', PlanBear.auth, plans.join);
+app.delete('/plans/:id/participants/:user', PlanBear.auth, plans.leave);
 app.post('/plans/:id/comments', PlanBear.auth, plans.comments);
-app.delete('/plans/:id/participants/:user', PlanBear.auth, plans.remove);
 
 // start listening
 
