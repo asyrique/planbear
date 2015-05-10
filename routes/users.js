@@ -81,6 +81,8 @@ exports.photo = function (req, res) {
 	User.findById(req.params.id, function (err, user) {
 		if (err) return res.status(400).json({});
 
+		if (!user) return res.status(404);
+
 		var buffer,
 			contentType;
 
