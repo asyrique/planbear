@@ -21,7 +21,7 @@ var schema = new mongoose.Schema({
 	},
 	participants: [
 		{
-			time: {
+			joined: {
 				type: Date,
 				default: Date.now
 			},
@@ -38,7 +38,7 @@ var schema = new mongoose.Schema({
 				ref: 'User'
 			},
 			body: String,
-			time: {
+			created: {
 				type: Date,
 				default: Date.now
 			},

@@ -188,7 +188,7 @@ exports.comment = function (req, res) {
 						name: req.user.name
 					},
 					body: comment.body,
-					time: comment.time
+					created: comment.created
 				});
 			});
 		} else {
