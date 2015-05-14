@@ -49,7 +49,11 @@ var schema = new mongoose.Schema(
             {
                 type: Date,
                 default: Date.now
-            }
+            },
+			auto: {
+				type: Boolean,
+				default: false
+			}
         }
     ]
 });

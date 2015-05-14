@@ -91,6 +91,12 @@ exports.join = function (req, res) {
 			user: req.user._id
 		});
 
+		plan.comments.push({
+			user: req.user._id,
+			auto: true,
+			body: req.user.name.split(' ')[0] + ' is interested.'
+		});
+
 		plan.save(function (err) {
 			if (err) return res.status(500).send(err);
 
