@@ -34,7 +34,7 @@ app.use(cors());
 
 mongoose.connect(process.env.MONGOHQ_URL || 'mongodb://localhost/mesenja', function (err) {
 	if (err) {
-		console.log('DB error!');
+		console.error('DB error!');
 
 		throw err;
 	}
@@ -74,6 +74,14 @@ app.get('/plans/:id', PlanBear.auth, plans.fetchOne);
 app.post('/plans/:id', PlanBear.auth, plans.join);
 app.delete('/plans/:id/participants/:user', PlanBear.auth, plans.leave);
 app.post('/plans/:id/comments', PlanBear.auth, plans.comments);
+
+// catch all
+
+app.use(function(err, req, res) {
+	res.send(500).send({
+		error: 'Something broke'
+	});
+});
 
 // start listening
 
