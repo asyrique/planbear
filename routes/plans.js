@@ -94,8 +94,15 @@ exports.join = function (req, res) {
 		plan.save(function (err) {
 			if (err) return res.status(500).send(err);
 
-			res.send({
-				comments: plan.comments
+			Plan.populate(plan, [{
+				path: 'comments.user',
+				select: 'name'
+			}], function(err, plan) {
+				if (err) return res.status(500).send(err);
+
+				res.send({
+					comments: plan.comments
+				});
 			});
 		});
 	});
@@ -153,7 +160,7 @@ exports.participants = function (req, res) {
 	});
 }
 
-exports.comments = function (req, res) {
+exports.comment = function (req, res) {
 	Plan.findById(req.params.id, function (err, plan) {
 		if (err) return res.send(err);
 
