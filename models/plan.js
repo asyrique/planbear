@@ -47,7 +47,8 @@ var schema = new mongoose.Schema({
 				default: false
 			}
         }
-    ]
+    ],
+	removed: [String]
 });
 
 schema.set('toJSON', {
