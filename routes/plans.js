@@ -38,8 +38,8 @@ exports.fetch = function (req, res) {
 			$maxDistance: distance
 		}
 	}, {
-		sort: {
-			date: 1
+		$sort: {
+			created: 'desc'
 		}
 	}).populate({
 		path: 'creator',
