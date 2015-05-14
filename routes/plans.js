@@ -83,7 +83,7 @@ exports.join = function (req, res) {
 
 		if (!plan) return res.status(404).send({});
 
-		if (plan.removed.index(req.user._id) >= 0) return res.status(403).send({});
+		if (plan.removed.indexOf(req.user._id) >= 0) return res.status(403).send({});
 
 		plan.participants.push({
 			user: req.user._id
