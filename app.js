@@ -1,4 +1,4 @@
-// setup development environment
+// setup dev
 
 try {
 	require('dotenv').load();
@@ -6,11 +6,12 @@ try {
 	console.log(ex);
 }
 
-// include dependencies
+// dependencies
 
-var express = require('express'), // call express
+var express = require('express'),
 	bodyParser = require('body-parser'),
-	cors = require('cors');
+	cors = require('cors'),
+	mongoose = require('mongoose');
 
 // init app
 
@@ -27,9 +28,9 @@ app.use(cors());
 
 // connect to database
 
-mongoose.connect(process.env.MONGOLAB_URI, function (err) {
+mongoose.connect(process.env.MONGOLAB_URI || 'mongodb://localhost/mesenja', function (err) {
 	if (err) {
-		console.log("DB error!");
+		console.log('DB error!');
 
 		throw err;
 	}
@@ -44,9 +45,7 @@ var users = require('./routes/users'),
 // "home"
 
 app.get('/', function (req, res) {
-	res.json({
-		message: 'APIv2'
-	});
+	res.send('PlanBear API v3');
 });
 
 // sms auth
