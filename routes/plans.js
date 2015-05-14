@@ -131,6 +131,28 @@ exports.leave = function (req, res) {
 	});
 }
 
+
+exports.participants = function (req, res) {
+	Plan.findById(req.params.id, function (err, plan) {
+		if (err) return res.status(500).send(err);
+
+		if (!plan) return res.status(404).send({});
+
+		if (plan.creator.equals(req.user._id)) {
+			Plan.populate(plan, [{
+				path: 'participants.user',
+				select: 'name'
+			}], function(err, plan) {
+				if (err) return res.status(500).send(err);
+
+				res.send(plan.participants);
+			});
+		} else {
+			res.status(401).send({});
+		}
+	});
+}
+
 exports.comments = function (req, res) {
 	Plan.findById(req.params.id, function (err, plan) {
 		if (err) return res.send(err);
