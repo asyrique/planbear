@@ -1,5 +1,4 @@
 var User = require('../models/user');
-var trianglify = require('trianglify');
 
 exports.create = function (req, res) {
 	var user = new User();
@@ -83,28 +82,17 @@ exports.photo = function (req, res) {
 
 		if (!user) return res.status(404);
 
-		var buffer,
-			contentType;
+		if (user.photo) {
+			var buffer = new Buffer(user.photo, 'base64');
 
-		if (!user.photo) {
-			buffer = new Buffer(trianglify({
-				height: 300,
-				width: 300,
-				seed: req.params.id
-			}));
+			res.writeHead(200, {
+				'Content-Type': 'image/jpeg',
+				'Content-Length': buffer.length
+			});
 
-			contentType = 'png';
+			res.end(buffer);
 		} else {
-			buffer = new Buffer(user.photo, 'base64');
-
-			contentType = 'jpeg';
+			res.redirect('http://planbear.co/photo/' + user._id);
 		}
-
-		res.writeHead(200, {
-			'Content-Type': 'image/' + contentType,
-			'Content-Length': buffer.length
-		});
-
-		res.end(buffer);
 	});
 };
