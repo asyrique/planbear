@@ -1,4 +1,8 @@
+var User = require('../planbear/planbear');
+
 var User = require('../models/user');
+
+var postmark = require('postmark')(process.env.POSTMARK_API_KEY);
 
 exports.create = function (req, res) {
 	var user = new User();
@@ -25,6 +29,20 @@ exports.create = function (req, res) {
 				joined: user.joined
 			}
 		});
+
+		if (user.email) {
+			PlanBear.renderTemplate(config.tags.NEW_USER, {
+				name: user.name.split(' ')[0]
+			}, function (html) {
+				postmark.send({
+					From: process.env.POSTMARK_EMAIL,
+					To: user.email,
+					Subject: 'Welcome to PlanBear',
+					HtmlBody: html,
+					Tag: 'new-user'
+				});
+			});
+		}
 	});
 };
 
