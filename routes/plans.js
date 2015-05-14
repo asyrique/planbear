@@ -30,7 +30,7 @@ exports.fetch = function (req, res) {
 	var distance = req.query.distance || 10,
 		coordinates = [req.query.longitude, req.query.latitude];
 
-	distance /= 6371;
+	distance /= 111.12;
 
 	Plan.find({
 		location: {
