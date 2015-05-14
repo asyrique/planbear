@@ -37,9 +37,9 @@ exports.fetch = function (req, res) {
 			$near: coordinates,
 			$maxDistance: distance
 		}
-	}, {
-		$sort: {
-			created: 'desc'
+	}, null, {
+		sort: {
+			created: -1
 		}
 	}).populate({
 		path: 'creator',
