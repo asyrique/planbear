@@ -135,7 +135,7 @@ exports.leave = function (req, res) {
 
 			plan.comments.some(function (comment) {
 				if (comment.user.equals(req.params.user) && comment.auto) {
-					comments.pull(comment._id);
+					plan.comments.pull(comment._id);
 
 					return true;
 				}
