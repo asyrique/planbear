@@ -13,7 +13,7 @@ exports.create = function (req, res) {
 	user.photo = req.body.photo;
 	user.preferences = req.body.preferences;
 
-	user.token = require('crypto').createHash('sha256').update(user.name + toString(Date.now()) + user.phone + 'pedobear').digest('hex');
+	user.token = require('crypto').createHash('sha256').update(user.name + toString(Date.now()) + user.phone + 'planbear').digest('hex');
 
 	user.save(function (err) {
 		if (err) return res.status(400).json({
@@ -31,7 +31,7 @@ exports.create = function (req, res) {
 		});
 
 		if (user.email) {
-			PlanBear.renderTemplate(config.tags.NEW_USER, {
+			PlanBear.renderTemplate('new-user', {
 				name: user.name.split(' ')[0]
 			}, function (html) {
 				postmark.send({
