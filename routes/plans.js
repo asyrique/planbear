@@ -27,7 +27,7 @@ exports.fetch = function (req, res) {
 		});
 	}
 
-	var distance = req.query.distance || 20,
+	var distance = req.query.distance || 10,
 		coordinates = [req.query.longitude, req.query.latitude];
 
 	distance /= 6371;
@@ -36,6 +36,10 @@ exports.fetch = function (req, res) {
 		location: {
 			$near: coordinates,
 			$maxDistance: distance
+		}
+	}, {
+		sort: {
+			date: 1
 		}
 	}).populate({
 		path: 'creator',
