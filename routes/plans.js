@@ -101,7 +101,7 @@ exports.join = function (req, res) {
 			Plan.populate(plan, [{
 				path: 'comments.user',
 				select: 'name'
-			}], function(err, plan) {
+			}], function (err, plan) {
 				if (err) return res.status(500).send(err);
 
 				res.send({
@@ -133,6 +133,14 @@ exports.leave = function (req, res) {
 
 			plan.removed.push(req.params.user);
 
+			plan.comments.some(function (comment) {
+				if (comment.user.equals(req.params.user) && comment.auto) {
+					comments.pull(comment._id);
+
+					return true;
+				}
+			});
+
 			plan.save(function (err) {
 				if (err) return res.status(500).send(err);
 
@@ -155,7 +163,7 @@ exports.participants = function (req, res) {
 			Plan.populate(plan, [{
 				path: 'participants.user',
 				select: 'name'
-			}], function(err, plan) {
+			}], function (err, plan) {
 				if (err) return res.status(500).send(err);
 
 				res.send(plan.participants);
