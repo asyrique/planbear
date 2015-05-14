@@ -43,13 +43,13 @@ mongoose.connect(process.env.MONGOHQ_URL, function (err) {
 var PlanBear = require('./planbear/planbear');
 
 var users = require('./routes/users'),
-	plans = require('./routes/plan'),
+	plans = require('./routes/plans'),
 	smsAuth = require('./routes/sms-auth');
 
 // "home"
 
 app.get('/', function (req, res) {
-	res.send('PlanBear API v3');
+	res.type('text/plain').send('PlanBear API v3');
 });
 
 // sms auth
@@ -78,7 +78,7 @@ app.post('/plans/:id/comments', PlanBear.auth, plans.comments);
 // catch all
 
 app.use(function(err, req, res) {
-	res.send(500).send({
+	res.status(500).send({
 		error: 'Something broke'
 	});
 });
