@@ -1,3 +1,7 @@
+// newrelic
+
+require('newrelic');
+
 // setup dev
 
 try {
@@ -28,7 +32,7 @@ app.use(cors());
 
 // connect to database
 
-mongoose.connect(process.env.MONGOLAB_URI || 'mongodb://localhost/mesenja', function (err) {
+mongoose.connect(process.env.MONGOHQ_URL || 'mongodb://localhost/mesenja', function (err) {
 	if (err) {
 		console.log('DB error!');
 
